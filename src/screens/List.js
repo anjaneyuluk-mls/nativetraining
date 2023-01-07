@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, {Fragment, useEffect, useState} from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   FlatList,
   StatusBar,
@@ -14,10 +14,11 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-import {Text, Card, Button, Icon} from '@rneui/themed';
-import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {Input} from '@rneui/base';
+import { Text, Card, Button, Icon } from '@rneui/themed';
+import { Colors, Header } from 'react-native/Libraries/NewAppScreen';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Input } from '@rneui/base';
+import { axiosInstance } from '../services/axios';
 
 const List = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -28,15 +29,14 @@ const List = () => {
   };
 
   const fetchMovies = () => {
-    fetch('http://10.0.2.2:3600/movies')
-      .catch(err => console.log(err))
-      .then(res => res.json())
-      .then(data => setData(data.items));
+    axiosInstance
+      .get('http://10.0.2.2:3600/movies')
+      .then((res) => setData(res.data.items));
   };
   useEffect(() => {
     fetchMovies();
   }, []);
-  const renderItem = ({item, index}) => {
+  const renderItem = ({ item, index }) => {
     return (
       <Card key={item.id}>
         <Card.Title>{item.name}</Card.Title>
@@ -47,15 +47,8 @@ const List = () => {
     );
   };
   const add = async () => {
-    console.log('I am pressed');
-    const d = {name: name};
-    await fetch('http://10.0.2.2:3600/movie', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(d),
-    });
+    const data = { name: name };
+    await axiosInstance.post('movie', data);
     fetchMovies();
   };
   return (
@@ -65,14 +58,16 @@ const List = () => {
         backgroundColor={backgroundStyle.backgroundColor}
       /> */}
       <View style={styles.container}>
-        <View style={{width: '100%', height: 120}}>
+        <View style={{ width: '100%', height: 120 }}>
           <Input placeholder="type name" onChangeText={setName} />
-          <Button onPress={add}>add</Button>
+          <Button style={{ width: 80 }} onPress={add}>
+            add
+          </Button>
         </View>
-        <View style={{width: '100%', height: 300}}>
+        <View style={{ width: '100%', flex: 1 }}>
           {data ? (
             <FlatList
-              style={{width: '100%'}}
+              style={{ width: '100%' }}
               ListHeaderComponent={() => (
                 <Text style={styles.title}>Movies</Text>
               )}
@@ -92,12 +87,11 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 20,
     padding: 12,
+    marginBottom: 200,
     display: 'flex',
     flexDirection: 'column',
     height: '100%',
     width: '100%',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
   },
   sectionDescription: {
     marginTop: 8,
