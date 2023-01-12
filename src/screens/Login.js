@@ -11,7 +11,15 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { axiosInstance } from '../services/axios';
 import AsyncStorage from '@react-native-community/async-storage';
+import styled from 'styled-components';
+import { Input } from '@rneui/base';
 
+const Container = styled.View`
+  flex: 1;
+  background-color: white;
+  align-items: center;
+  justify-content: center;
+`;
 export default function Login({ navigation }) {
   const {
     control,
@@ -49,19 +57,20 @@ export default function Login({ navigation }) {
   };
 
   return (
-    <View>
+    <Container>
       <Controller
         control={control}
         rules={{
           required: true,
         }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <Input
             style={styles.input}
             onBlur={onBlur}
             placeholder="username"
             onChangeText={onChange}
             value={value}
+            leftIcon={{ type: 'font-awesome', name: 'user' }}
           />
         )}
         name="username"
@@ -74,10 +83,11 @@ export default function Login({ navigation }) {
           maxLength: 100,
         }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <Input
             style={styles.input}
             onBlur={onBlur}
             placeholder="password"
+            leftIcon={{ type: 'font-awesome', name: 'lock' }}
             onChangeText={onChange}
             value={value}
           />
@@ -86,7 +96,7 @@ export default function Login({ navigation }) {
       />
 
       <Button title="Submit" onPress={handleSubmit(onSubmit)} />
-    </View>
+    </Container>
   );
 }
 

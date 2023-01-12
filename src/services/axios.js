@@ -1,8 +1,10 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
+import { Platform } from 'react-native';
 
 export const axiosInstance = axios.create({
-  baseURL: 'http://10.0.2.2:3600',
+  baseURL:
+    Platform.OS === 'ios' ? 'http://localhost:3600' : 'http://10.0.2.2:3600',
 });
 
 axiosInstance.interceptors.request.use((req) => {

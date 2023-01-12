@@ -29,9 +29,7 @@ const List = () => {
   };
 
   const fetchMovies = () => {
-    axiosInstance
-      .get('http://10.0.2.2:3600/movies')
-      .then((res) => setData(res.data.items));
+    axiosInstance.get('movies').then((res) => setData(res.data.items));
   };
   useEffect(() => {
     fetchMovies();
