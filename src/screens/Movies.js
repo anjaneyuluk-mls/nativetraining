@@ -8,6 +8,7 @@
 
 import React, { Fragment, useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   StatusBar,
   StyleSheet,
@@ -20,16 +21,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input } from '@rneui/base';
 import { axiosInstance } from '../services/axios';
 
-const List = () => {
+const Movies = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [data, setData] = useState(null);
-  const [name, setName] = useState('');
+  const [refreshing, setrefreshing] = useState(false);
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  const fetchMovies = () => {
-    axiosInstance.get('movies').then((res) => setData(res.data.items));
+  const fetchMovies = async () => {
+    setrefreshing(true);
+    await axiosInstance
+      .get('movies')
+      .then((res) => setData(res.data.items.reverse()));
+    setrefreshing(false);
   };
   useEffect(() => {
     fetchMovies();
@@ -38,17 +43,19 @@ const List = () => {
     return (
       <Card key={item.id}>
         <Card.Title>{item.name}</Card.Title>
+        <Card.Image
+          style={{ padding: 0 }}
+          source={{
+            uri: 'https://awildgeographer.files.wordpress.com/2015/02/john_muir_glacier.jpg',
+          }}
+        />
         <Card.Divider />
-        <Text>{item.release_date}</Text>
-        <Text>{item.hit}</Text>
+        <Text>Release date: {item.release_date}</Text>
+        <Text> Is Hit ? {item.hit ? 'Yes' : 'No'}</Text>
       </Card>
     );
   };
-  const add = async () => {
-    const data = { name: name };
-    await axiosInstance.post('movie', data);
-    fetchMovies();
-  };
+
   return (
     <SafeAreaView style={backgroundStyle}>
       {/* <StatusBar
@@ -56,24 +63,18 @@ const List = () => {
         backgroundColor={backgroundStyle.backgroundColor}
       /> */}
       <View style={styles.container}>
-        <View style={{ width: '100%', height: 120 }}>
-          <Input placeholder="type name" onChangeText={setName} />
-          <Button style={{ width: 80 }} onPress={add}>
-            add
-          </Button>
-        </View>
-        <View style={{ width: '100%', flex: 1 }}>
+        <View style={{ width: '100%' }}>
+          <Text style={styles.title}>Favourite Movies </Text>
           {data ? (
             <FlatList
+              refreshing={refreshing}
+              onRefresh={fetchMovies}
               style={{ width: '100%' }}
-              ListHeaderComponent={() => (
-                <Text style={styles.title}>Movies</Text>
-              )}
               renderItem={renderItem}
               data={data}
             />
           ) : (
-            <Text>loading</Text>
+            <ActivityIndicator />
           )}
         </View>
       </View>
@@ -83,13 +84,10 @@ const List = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
     padding: 12,
-    marginBottom: 200,
     display: 'flex',
     flexDirection: 'column',
-    height: '100%',
-    width: '100%',
+    marginBottom: 150,
   },
   sectionDescription: {
     marginTop: 8,
@@ -104,4 +102,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default List;
+export default Movies;

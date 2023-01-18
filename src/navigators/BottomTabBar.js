@@ -1,8 +1,9 @@
-import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import List from '../screens/List';
-import SettingsScreen from '../screens/Settings';
+import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Movies from '../screens/Movies';
+import NewMovie from '../screens/NewMovie';
+import SettingsScreen from '../screens/Settings';
 
 const Tab = createBottomTabNavigator();
 
@@ -25,8 +26,15 @@ export default function BottomTabBar({ navigation }) {
         options={{
           tabBarIcon: () => <Icon name={'home'} size={21} color={'blue'} />,
         }}
-        name="List"
-        component={List}
+        name="Movies"
+        component={Movies}
+      />
+      <Tab.Screen
+        options={{
+          tabBarIcon: () => <Icon name={'home'} size={21} color={'blue'} />,
+        }}
+        name="NewMovie"
+        component={NewMovie}
       />
       <Tab.Screen
         options={{
