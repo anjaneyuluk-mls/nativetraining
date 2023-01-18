@@ -4,6 +4,12 @@ import { Text, View, Button, Alert, ActivityIndicator } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { CheckBox, Input } from '@rneui/themed';
 import { axiosInstance } from '../services/axios';
+import DocumentPicker, {
+  DirectoryPickerResponse,
+  DocumentPickerResponse,
+  isInProgress,
+  types,
+} from 'react-native-document-picker';
 
 const Container = styled.View`
   padding: 7px;
@@ -24,9 +30,22 @@ export default function NewMovie({ navigation }) {
   const onSubmit = async (data) => {
     setLoading(true);
     console.log({ data });
-    await axiosInstance.post('movie', data);
-    setLoading(false);
-    navigation.navigate('Movies');
+    const formData = new FormData();
+    Object.keys(data).forEach((key) => {
+      console.log(key, data[key]);
+      formData.append(key, data[key]);
+    });
+    axiosInstance({
+      url: 'movie',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: formData,
+    }).then((res) => {
+      setLoading(false);
+      navigation.navigate('Movies');
+    });
   };
 
   return (
@@ -65,7 +84,28 @@ export default function NewMovie({ navigation }) {
                 onPress={() => onChange(!value)}
               />
             )}
-            name="lastName"
+            name="hit"
+          />
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Button
+                title="open picker for single file selection"
+                onPress={async () => {
+                  try {
+                    const pickerResult = await DocumentPicker.pickSingle({
+                      presentationStyle: 'fullScreen',
+                      copyTo: 'cachesDirectory',
+                    });
+                    onChange(pickerResult);
+                  } catch (e) {}
+                }}
+              />
+            )}
+            name="image"
           />
 
           <Button title="Submit" onPress={handleSubmit(onSubmit)} />

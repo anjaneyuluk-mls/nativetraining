@@ -20,6 +20,7 @@ import { Colors, Header } from 'react-native/Libraries/NewAppScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Input } from '@rneui/base';
 import { axiosInstance } from '../services/axios';
+import { getBaseUrl } from '../services/api';
 
 const Movies = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -46,7 +47,9 @@ const Movies = () => {
         <Card.Image
           style={{ padding: 0 }}
           source={{
-            uri: 'https://awildgeographer.files.wordpress.com/2015/02/john_muir_glacier.jpg',
+            uri: item.image
+              ? getBaseUrl() + '/' + item.image
+              : 'https://awildgeographer.files.wordpress.com/2015/02/john_muir_glacier.jpg',
           }}
         />
         <Card.Divider />
